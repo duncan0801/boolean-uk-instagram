@@ -56,58 +56,50 @@ function createEl(tag) {
 }
 
 ////////
-
 const rootEl = document.querySelector("#root");
 console.log(rootEl);
 
+
 //////// header section ////////
+function createHeaderSection() {
+  const headerEl = createEl("header");
+  headerEl.setAttribute("class", "main-header");
 
-const headerEl = createEl("header");
-headerEl.setAttribute("class", "main-header");
+  rootEl.append(headerEl);
 
-const mainEl = createEl("main");
-mainEl.setAttribute("class", "wrapper");
-
-rootEl.append(headerEl, mainEl);
-
-///////////////////////////////////
-
-//////// create user section /////
-
-function createUserSection(users) {
-  const divEl = createEl("div");
-  divEl.setAttribute("class", "wrapper");
-
-  for (person of users) {
-    function createUser(person) {
-      const chipEl = createEl("div");
-      chipEl.setAttribute("class", "chip");
-
-      const avatarSmallEl = createEl("div");
-      avatarSmallEl.setAttribute("class", "avatar-small");
-
-      const imgEl = createEl("img");
-      imgEl.setAttribute("src", person.avatar);
-      imgEl.setAttribute("alt", person.username);
-
-      const nameEl = createEl("span");
-      nameEl.innerText = person.username;
-
-      avatarSmallEl.append(imgEl)
-
-      chipEl.append(avatarSmallEl, nameEl);
-
-      divEl.append(chipEl);
-    }
-    createUser(person);
-  }
-
-  headerEl.append(divEl);
+  return headerEl
 }
+let headerEl =createHeaderSection()
 
-///////////////////////////////////
+function creatMainSection() {
+  const mainEl = createEl("main");
+  mainEl.setAttribute("class", "wrapper");
 
-//////// create post section /////
+  rootEl.append(mainEl);
+
+  return mainEl
+}
+let mainEl = creatMainSection()
+
+function createUserChip(person) {
+  const chipEl = createEl("div");
+  chipEl.setAttribute("class", "chip");
+
+  const avatarSmallEl = createEl("div");
+  avatarSmallEl.setAttribute("class", "avatar-small");
+
+  const imgEl = createEl("img");
+  imgEl.setAttribute("src", person.avatar);
+  imgEl.setAttribute("alt", person.username);
+
+  const nameEl = createEl("span");
+  nameEl.innerText = person.username;
+
+  avatarSmallEl.append(imgEl)
+  chipEl.append(avatarSmallEl, nameEl);
+
+  return chipEl
+}
 
 const createPostSectionEl = createEl("section");
 createPostSectionEl.setAttribute("class", "create-post-section");
@@ -118,7 +110,43 @@ feedEl.setAttribute("class", "feed");
 
 ///////////////////////////////////
 
-////// create post section //////
+//////// create user section /////
+
+function createUserSection(users) {
+  const divEl = createEl("div");
+  divEl.setAttribute("class", "wrapper");
+
+  for (person of users) {
+    createUserChip(person)
+    let chipEl = createUserChip(person);
+    divEl.append(chipEl)
+    headerEl.append(divEl);
+  }
+
+  
+}
+
+
+
+//////// create post section /////
+{/* <section class="create-post-section">
+  <form id="create-post-form" autocomplete="off">
+    <h2>Create a post</h2>
+    <label for="image">Image</label>
+    <input id="image" name="image" type="text" />
+    <label for="title">Title</label>
+    <input id="title" name="title" type="text" />
+    <label for="content">Content</label>
+    <textarea id="content" name="content" rows="2" columns="30"></textarea>
+    <div class="action-btns">
+      <button id="preview-btn" type="button">Preview</button>
+      <button type="submit">Post</button>
+    </div>
+  </form> */}
+
+
+
+
 
 function createCreatePostSection() {
   const formEl = createEl("form");
