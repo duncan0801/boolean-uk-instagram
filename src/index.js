@@ -63,7 +63,7 @@ console.log(rootEl);
 //////// header section ////////
 
 const headerEl = createEl("header");
-headerEl.setAttribute("class", ".main-header");
+headerEl.setAttribute("class", "main-header");
 
 const mainEl = createEl("main");
 mainEl.setAttribute("class", "wrapper");
@@ -93,9 +93,9 @@ function createUserSection(users) {
       const nameEl = createEl("span");
       nameEl.innerText = person.username;
 
-      avatarSmallEl.append(imgEl, nameEl);
+      avatarSmallEl.append(imgEl)
 
-      chipEl.append(avatarSmallEl);
+      chipEl.append(avatarSmallEl, nameEl);
 
       divEl.append(chipEl);
     }
@@ -189,22 +189,22 @@ function createCreatePostSection() {
 
 function createPostSection(postData) {
   for (post of postData) {
-    const listItemEl = createEl("li");
+    // const listItemEl = createEl("li");
 
-    const chipEl = createEl("div");
-    chipEl.setAttribute("class", "chip");
+    // const chipEl = createEl("div");
+    // chipEl.setAttribute("class", "chip");
 
-    const avatarSmallEl = createEl("div");
-    avatarSmallEl.setAttribute("class", "avatar-small");
+    // const avatarSmallEl = createEl("div");
+    // avatarSmallEl.setAttribute("class", "avatar-small");
 
-    const imgEl = createEl("img");
-    imgEl.setAttribute("src", person.avatar);
-    imgEl.setAttribute("alt", person.username);
+    // const imgEl = createEl("img");
+    // imgEl.setAttribute("src", person.avatar);
+    // imgEl.setAttribute("alt", person.username);
 
-    const nameEl = createEl("span");
-    nameEl.innerText = person.username;
+    // const nameEl = createEl("span");
+    // nameEl.innerText = person.username;
 
-    users.avatar;
+    // users.avatar;
   }
 }
 
