@@ -1,4 +1,7 @@
 /*
+
+SERVER: npx json-server --watch db/db.json --routes db/routes.json --static .
+
 Description
 In this exercise we explore a multi-user experience most commonly found on social media apps like Instagram, where users can see and interact with other users.
 
@@ -101,17 +104,6 @@ function createUserChip(person) {
   return chipEl
 }
 
-const createPostSectionEl = createEl("section");
-createPostSectionEl.setAttribute("class", "create-post-section");
-mainEl.append(createPostSectionEl);
-
-const feedEl = createEl("section");
-feedEl.setAttribute("class", "feed");
-
-///////////////////////////////////
-
-//////// create user section /////
-
 function createUserSection(users) {
   const divEl = createEl("div");
   divEl.setAttribute("class", "wrapper");
@@ -126,27 +118,26 @@ function createUserSection(users) {
   
 }
 
+function createPostSection() {
+  let createPostSectionEl = createEl("section")
+  createPostSectionEl.setAttribute("class", "create-post-section")
+  
+  mainEl.append(createPostSectionEl)
+
+  return createPostSectionEl
+}
+let createPostSectionEl = createPostSection()
 
 
-//////// create post section /////
-{/* <section class="create-post-section">
-  <form id="create-post-form" autocomplete="off">
-    <h2>Create a post</h2>
-    <label for="image">Image</label>
-    <input id="image" name="image" type="text" />
-    <label for="title">Title</label>
-    <input id="title" name="title" type="text" />
-    <label for="content">Content</label>
-    <textarea id="content" name="content" rows="2" columns="30"></textarea>
-    <div class="action-btns">
-      <button id="preview-btn" type="button">Preview</button>
-      <button type="submit">Post</button>
-    </div>
-  </form> */}
+function createFeedSection() {
+  const feedEl = createEl("section");
+  feedEl.setAttribute("class", "feed");
 
+  mainEl.append(feedEl);
 
-
-
+  return feedEl
+}
+let feedEl = createFeedSection()
 
 function createCreatePostSection() {
   const formEl = createEl("form");
@@ -204,62 +195,15 @@ function createCreatePostSection() {
     textAreaEL,
     actionDivEl
   );
+  console.log(formEl)
+  createPostSectionEl.append(formEl)
 
-  createPostSectionEl.append(formEl);
-
-  // <button id="preview-btn" type="button">Preview</button>
-  //       <button type="submit">Post</button>
+  return formEl
 }
+createCreatePostSection()
 
-///////////////////////////////////
-
-////////// feed section ///////
-
-function createPostSection(postData) {
-  for (post of postData) {
-    // const listItemEl = createEl("li");
-
-    // const chipEl = createEl("div");
-    // chipEl.setAttribute("class", "chip");
-
-    // const avatarSmallEl = createEl("div");
-    // avatarSmallEl.setAttribute("class", "avatar-small");
-
-    // const imgEl = createEl("img");
-    // imgEl.setAttribute("src", person.avatar);
-    // imgEl.setAttribute("alt", person.username);
-
-    // const nameEl = createEl("span");
-    // nameEl.innerText = person.username;
-
-    // users.avatar;
-  }
-}
-
-// "id": 1,
-// "title": "A tree in blossom",
-// "content": "Spring is finally here... I just love the colours.",
-// "image": {
-// "src": "https://images.unsplash.com/photo-1616745309504-0cb79e9ae590?ixid=MXwxMjA3fDB8MHx0b3BpYy1mZWVkfDI0fDZzTVZqVExTa2VRfHxlbnwwfHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-// "alt": "a tree in blossom"
-// },
-// "likes": 0,
-// "userId": 1
-
-// {/* <li class="post">
-// <div class="chip active">
-//   <div class="avatar-small">
-//     <img
-//       src="https://uploads5.wikiart.org/images/salvador-dali.jpg!Portrait.jpg"
-//       alt="Salvador Dali"
-//     />
-//   </div>
-//   <span>Salvador Dali</span>
-// </div> */}
-
-//// speaking to server section - getting user data//////
-
-let users = [];
+let users = []
+let posts = []
 
 fetch(`http://localhost:3000/users`)
   .then(function (response) {
@@ -270,22 +214,142 @@ fetch(`http://localhost:3000/users`)
     console.log(userData);
     createUserSection(userData);
     users = userData;
+
+    console.log("this is the user data :", users);
   });
-
-createCreatePostSection();
-
-////////////////////////////////////////////
-
-//// this is geting post data ////
-
-//1. Get the post data, be able to use that data in a create posat function
 
 fetch(`http://localhost:3000/posts`)
   .then(function (response) {
     return response.json();
   })
   .then(function (postData) {
-    console.log("This is post data: ", postData);
+    posts = postData
+    console.log("this is the posts data :", posts);
+
     createPostSection(postData);
-    console.log("this is users data :", users);
   });
+
+  for (post of posts) {
+    function createFeedPost() {
+      const liEl = document.createElement("li");
+      liEl.setAttribute("class", "post");
+  
+      let userChipEl = createUserChip(user)
+  
+      const postImgDivEl = createEl("div");
+      postImgDivEl.setAttribute("class", "post--image");
+  
+      const postImgEl = createEl("img")
+      postImgEl.setAttribute("src", post.image.src)
+      postImgEl.setAttribute("alt", post.image.alt)
+  
+      postImgDivEl.append(postImgEl)
+  
+      const postContentDivEl = createEl("div")
+      postContentDivEl.setAttribute("class", "post--content")
+  
+      const postContentTitleEl = createEl("h2")
+      postContentTitleEl.innerText = post.title
+  
+      const postContentEl = createEl("p")
+      postContentEl.innerText = post.content
+  
+      postContentDivEl.append(postContentTitleEl,postContentEl )
+  
+      const postCommentsDivEl = createEl("div")
+      postCommentsDivEl.setAttribute("class", "post--comments")
+  
+      const postCommentsTitleEl = createEl("h3")
+      postCommentsTitleEl.innerText = "Comments"
+  
+      function generateComment() {
+        const postCommentDivEl = createEl("div")
+        postCommentDivEl.setAttribute("class", "post--comment")
+      
+        const avatarSmallDivEl = createEl("div")
+        avatarSmallDivEl.setAttribute("class", "avatar-small")
+  
+        const avatarSmallImgEl = createEl("img")
+        avatarSmallImgEl.setAttribute("src", user.avatar)
+  
+        const commentEl = createEl("p")
+        commentEl.innerText = post.comments[1].content
+  
+        avatarSmallDivEl.append(avatarSmallImgEl)
+        postCommentDivEl.append(avatarSmallDivEl,commentEl)
+  
+        return postCommentDivEl
+      }
+      let postCommentDivEl1 = generateComment()
+      console.log("POST COMMENT DIV:", postCommentDivEl1)
+      let postCommentDivEl2 = generateComment()
+  
+      postCommentsDivEl.append(postCommentsTitleEl,postCommentDivEl1,postCommentDivEl2 )
+  
+      liEl.append(userChipEl, postImgDivEl, postContentDivEl, postCommentsDivEl)
+  
+      return liEl
+    }
+  }
+  function createFeedPost() {
+    const liEl = document.createElement("li");
+    liEl.setAttribute("class", "post");
+
+    let userChipEl = createUserChip(user)
+
+    const postImgDivEl = createEl("div");
+    postImgDivEl.setAttribute("class", "post--image");
+
+    const postImgEl = createEl("img")
+    postImgEl.setAttribute("src", post.image.src)
+    postImgEl.setAttribute("alt", post.image.alt)
+
+    postImgDivEl.append(postImgEl)
+
+    const postContentDivEl = createEl("div")
+    postContentDivEl.setAttribute("class", "post--content")
+
+    const postContentTitleEl = createEl("h2")
+    postContentTitleEl.innerText = post.title
+
+    const postContentEl = createEl("p")
+    postContentEl.innerText = post.content
+
+    postContentDivEl.append(postContentTitleEl,postContentEl )
+
+    const postCommentsDivEl = createEl("div")
+    postCommentsDivEl.setAttribute("class", "post--comments")
+
+    const postCommentsTitleEl = createEl("h3")
+    postCommentsTitleEl.innerText = "Comments"
+
+    function generateComment() {
+      const postCommentDivEl = createEl("div")
+      postCommentDivEl.setAttribute("class", "post--comment")
+    
+      const avatarSmallDivEl = createEl("div")
+      avatarSmallDivEl.setAttribute("class", "avatar-small")
+
+      const avatarSmallImgEl = createEl("img")
+      avatarSmallImgEl.setAttribute("src", user.avatar)
+
+      const commentEl = createEl("p")
+      commentEl.innerText = post.comments[1].content
+
+      avatarSmallDivEl.append(avatarSmallImgEl)
+      postCommentDivEl.append(avatarSmallDivEl,commentEl)
+
+      return postCommentDivEl
+    }
+    let postCommentDivEl1 = generateComment()
+    console.log("POST COMMENT DIV:", postCommentDivEl1)
+    let postCommentDivEl2 = generateComment()
+
+    postCommentsDivEl.append(postCommentsTitleEl,postCommentDivEl1,postCommentDivEl2 )
+
+    liEl.append(userChipEl, postImgDivEl, postContentDivEl, postCommentsDivEl)
+
+    return liEl
+  }
+  let liEl = createFeedPost(post)
+  feedEl.append(liEl)
