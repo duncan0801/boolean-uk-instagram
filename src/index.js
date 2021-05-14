@@ -57,6 +57,14 @@ Tips
 function createEl(tag) {
   return document.createElement(tag);
 }
+function generateActiveUser () {
+  let activeUserEl = document.querySelector(".active span")
+  console.log(activeUserEl)
+  let activeUser = users.find(function (user) {
+    return activeUserEl.innerText === user.username
+  })
+  return activeUser
+}
 
 ////////
 const rootEl = document.querySelector("#root");
@@ -210,12 +218,14 @@ function createCreatePostSection() {
  
   createPostSectionEl.append(formEl)
 
+  
   // Submit post 
 
   formEl.addEventListener("submit", function(e) {
 
-    // e.preventDefault() 
-    
+    // e.preventDefault()
+    let activeUser = generateActiveUser()
+    console.log(activeUser)
 
     let newPost = {
     "title": inputForTitleEl.value,
@@ -225,9 +235,10 @@ function createCreatePostSection() {
       "alt": inputForTitleEl.value
     },
     "likes": 0,
-    "userId": 1,
+    "userId": activeUser.id,
     "comments": []
     } 
+    
     
     
     fetch(`http://localhost:3000/posts/`, {
@@ -357,7 +368,6 @@ function generateFeed(posts) {
       liEl.prepend(userChipEl, postImgDivEl)
       feedEl.append(liEl)
       liEl.append(postCommentsDivEl)
-      console.log(commentFormEl)
       return liEl
     }
     createFeedPost()
