@@ -110,9 +110,21 @@ function createUserSection(users) {
 
   for (person of users) {
     createUserChip(person)
+
     let chipEl = createUserChip(person);
+
     divEl.append(chipEl)
     headerEl.append(divEl);
+
+    chipEl.addEventListener("click", function (){
+      let chipArray = document.querySelectorAll("header .chip")
+
+      for (chip of chipArray) {
+        chip.setAttribute("class", "chip")
+      }
+      
+      chipEl.classList.add("active")
+    })
   }
 
   
@@ -198,9 +210,162 @@ function createCreatePostSection() {
  
   createPostSectionEl.append(formEl)
 
+  // Submit post 
+
+  formEl.addEventListener("submit", function(e) {
+
+    // e.preventDefault() 
+    
+
+    let newPost = {
+    "title": inputForTitleEl.value,
+    "content": textAreaEL.value,
+    "image": {
+      "src": inputForImageEl.value,
+      "alt": inputForTitleEl.value
+    },
+    "likes": 0,
+    "userId": 1,
+    "comments": []
+    } 
+    
+    
+    fetch(`http://localhost:3000/posts/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newPost)
+    })
+      .then(function (response) {
+        if (response.ok){
+      
+        }
+        else {
+          alert(`There was an error ${response.status}`)
+        }
+        return response.json()
+      })
+  })
+
   return formEl
 }
 let formEl = createCreatePostSection()
+
+function generateFeed(posts) {
+  const feedUlEl = createEl("ul")
+  feedUlEl.setAttribute("class", "stack")
+
+  feedEl.append(feedUlEl)
+
+  for (post of posts) {
+    
+    const user = users.find(function (user) {
+      return user.id === post.userId
+    })
+    
+  
+    
+    function createFeedPost() {
+      const liEl = document.createElement("li");
+      liEl.setAttribute("class", "post");
+  
+      let userChipEl = createUserChip(user)
+  
+      const postImgDivEl = createEl("div");
+      postImgDivEl.setAttribute("class", "post--image");
+  
+      const postImgEl = createEl("img")
+      postImgEl.setAttribute("src", post.image.src)
+      postImgEl.setAttribute("alt", post.image.alt)
+  
+      postImgDivEl.append(postImgEl)
+  
+      const postContentDivEl = createEl("div")
+      postContentDivEl.setAttribute("class", "post--content")
+  
+      const postContentTitleEl = createEl("h2")
+      postContentTitleEl.innerText = post.title
+  
+      const postContentEl = createEl("p")
+      postContentEl.innerText = post.content
+  
+      postContentDivEl.append(postContentTitleEl,postContentEl)
+  
+      const postCommentsDivEl = createEl("div")
+      postCommentsDivEl.setAttribute("class", "post--comments")
+  
+      const postCommentsTitleEl = createEl("h3")
+      postCommentsTitleEl.innerText = "Comments"
+
+      liEl.append(postContentDivEl)
+  
+      function generateComments() {
+
+        for (comment in post.comments) {
+          const commentUser = users.find(function (user) {
+            return user.id === post.comments[comment].userId
+          })
+          const postCommentDivEl = createEl("div")
+          postCommentDivEl.setAttribute("class", "post--comment")
+        
+          const avatarSmallDivEl = createEl("div")
+          avatarSmallDivEl.setAttribute("class", "avatar-small")
+    
+          const avatarSmallImgEl = createEl("img")
+          avatarSmallImgEl.setAttribute("src", commentUser.avatar)
+        
+          const commentEl = createEl("p")
+          commentEl.innerText = post.comments[comment].content
+    
+          avatarSmallDivEl.append(avatarSmallImgEl)
+          postCommentDivEl.append(avatarSmallDivEl,commentEl)
+          postCommentsDivEl.append(postCommentDivEl)
+  
+          liEl.append(postCommentsDivEl)
+        }
+        feedUlEl.append(liEl)
+      }
+      generateComments()
+
+      //make the comment form 
+      //form with a label, inout, button
+      //append label, input, buttonn  to form
+      //append form to postCommentsDivEl
+
+      const commentFormEl = createEl("form")
+      commentFormEl.setAttribute("id", "create-comment-form")
+      commentFormEl.setAttribute("autocomplete", "off")
+
+      const commentFormLabelEl = createEl("label")
+      commentFormLabelEl.setAttribute("for", "comment")
+      commentFormLabelEl.innerText = "Add Comment"
+
+      const commentFormInputEl = createEl("input")
+      commentFormInputEl.setAttribute("id", "comment")
+      commentFormInputEl.setAttribute("name", "comment")
+      commentFormInputEl.setAttribute("type", "text")
+
+      const commentFormButtonEl = createEl("input")
+      commentFormButtonEl.setAttribute("type", "submit")
+      commentFormButtonEl.innerText = Comment
+
+      commentFormEl.append(commentFormLabelEl, commentFormInputEl, commentFormButtonEl)
+
+      postCommentsDivEl.append(commentFormEl)
+
+      liEl.prepend(userChipEl, postImgDivEl)
+      feedEl.append(liEl)
+      liEl.append(postCommentsDivEl)
+      console.log(commentFormEl)
+      return liEl
+    }
+    createFeedPost()
+  }
+
+
+}
+
 
 let users = []
 let posts = []
@@ -221,123 +386,5 @@ fetch(`http://localhost:3000/posts`)
   })
   .then(function (postData) {
     posts = postData
-
     generateFeed(posts)
-
   });
-
-
-  function generateFeed(posts) {
-    const feedUlEl = createEl("ul")
-    feedUlEl.setAttribute("class", "stack")
-
-    feedEl.append(feedUlEl)
-
-    for (post of posts) {
-      
-      const user = users.find(function (user) {
-        return user.id === post.userId
-      })
-      console.log(user)
-      
-      function createFeedPost() {
-        const liEl = document.createElement("li");
-        liEl.setAttribute("class", "post");
-    
-        let userChipEl = createUserChip(user)
-    
-        const postImgDivEl = createEl("div");
-        postImgDivEl.setAttribute("class", "post--image");
-    
-        const postImgEl = createEl("img")
-        postImgEl.setAttribute("src", post.image.src)
-        postImgEl.setAttribute("alt", post.image.alt)
-    
-        postImgDivEl.append(postImgEl)
-    
-        const postContentDivEl = createEl("div")
-        postContentDivEl.setAttribute("class", "post--content")
-    
-        const postContentTitleEl = createEl("h2")
-        postContentTitleEl.innerText = post.title
-    
-        const postContentEl = createEl("p")
-        postContentEl.innerText = post.content
-    
-        postContentDivEl.append(postContentTitleEl,postContentEl )
-    
-        const postCommentsDivEl = createEl("div")
-        postCommentsDivEl.setAttribute("class", "post--comments")
-    
-        const postCommentsTitleEl = createEl("h3")
-        postCommentsTitleEl.innerText = "Comments"
-    
-        function generateComments() {
-  
-          for (comment in post.comments) {
-            console.log(user.id)
-            const commentUser = users.find(function (user) {
-              return user.id === post.comments[comment].userId
-            })
-            console.log(commentUser)
-            const postCommentDivEl = createEl("div")
-            postCommentDivEl.setAttribute("class", "post--comment")
-          
-            const avatarSmallDivEl = createEl("div")
-            avatarSmallDivEl.setAttribute("class", "avatar-small")
-      
-            const avatarSmallImgEl = createEl("img")
-            avatarSmallImgEl.setAttribute("src", commentUser.avatar)
-          
-            const commentEl = createEl("p")
-            commentEl.innerText = post.comments[comment].content
-      
-            avatarSmallDivEl.append(avatarSmallImgEl)
-            postCommentDivEl.append(avatarSmallDivEl,commentEl)
-            postCommentsDivEl.append(postCommentDivEl)
-    
-            liEl.append(postCommentsDivEl)
-            console.log(liEl)
-          }
-          feedUlEl.append(liEl)
-        }
-        generateComments()
-
-        //make the comment form 
-        //form with a label, inout, button
-        //append label, input, buttonn  to form
-        //append form to postCommentsDivEl
-
-        const commentFormEl = createEl("form")
-        commentFormEl.setAttribute("id", "create-comment-form")
-        commentFormEl.setAttribute("autocomplete", "off")
-
-        const commentFormLabelEl = createEl("label")
-        commentFormLabelEl.setAttribute("for", "comment")
-        commentFormLabelEl.innerText = "Add Comment"
-
-        const commentFormInputEl = createEl("input")
-        commentFormInputEl.setAttribute("id", "comment")
-        commentFormInputEl.setAttribute("name", "comment")
-        commentFormInputEl.setAttribute("type", "text")
-
-        const commentFormButtonEl = createEl("input")
-        commentFormButtonEl.setAttribute("type", "submit")
-        commentFormButtonEl.innerText = Comment
-
-        commentFormEl.append(commentFormLabelEl, commentFormInputEl, commentFormButtonEl)
-
-        postCommentsDivEl.append(commentFormEl)
-
-        liEl.prepend(userChipEl, postImgDivEl)
-        feedEl.append(liEl)
-       
-        return liEl
-      }
-      createFeedPost()
-    }
-  
-
-  }
-
-  
